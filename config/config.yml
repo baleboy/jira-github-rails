@@ -1,0 +1,16 @@
+# Configuration for your JIRA instance:
+address: 'https://crosswalk-project.org/jira'
+username: 'github'
+password: 'cr0ssw4lk'
+
+projects: ["TEST"]
+
+# SSL Options (only used if connecting via HTTPS)
+
+# The SSL version (SSLv3, SSLv23, ... SSLv3 is the default)
+
+ssl_version: 'SSLv23'
+
+# verify_certificate: false # true (default) or false. Only disable certificate verification for testing purposes
+
+verify_certificate: false
