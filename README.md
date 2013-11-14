@@ -1,28 +1,25 @@
-== README
+# Github-Jira Issue Resolver
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This application handles Github web hooks notifications for commits and pull requests, and comments and/or resolves any referenced issues in Jira. It mimics the syntax used when working with the Github issue tracker.
 
-Things you may want to cover:
+In a commit comment or pull request body, any reference to <JIRA-KEY>-xxx will cause the same comment to be posted to the corresponding issue in Jira. If the comment indicates that the commit/PR is fixing the issue, the issue will be resolved. To automatically resolve an issue, one of the following forms can be used (following the Github convention):
 
-* Ruby version
+   * Fix <JIRA-KEY>-xxx
+   * Fixes <JIRA-KEY>-xxx
+   * Fixed <JIRA-KEY>-xxx
+   * Resolve <JIRA-KEY>-xxx
+   * Resolves <JIRA-KEY>-xxx
+   * Resolved <JIRA-KEY>-xxx
+   * Close <JIRA-KEY>-xxx
+   * Closes <JIRA-KEY>-xxx
+   * Closed <JIRA-KEY>-xxx
 
-* System dependencies
+## Installation
 
-* Configuration
+To install, clone this github repository and run "bundle install" in the top-level directory. Run in a web server of your choice. 
 
-* Database creation
+## Configuration
 
-* Database initialization
+To configure, copy the file config-template.yaml and save it as config.yaml. The template file contains detailed information about each configuration option.
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+by [Francesco Balestrieri](bale@balenet.com)).
