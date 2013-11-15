@@ -1,0 +1,19 @@
+# Configuration for your JIRA instance:
+address: 'server url'
+username: 'username'
+password: 'password'
+
+# List of project keys
+projects: ["PROJECT1", "PROJECT2"]
+
+### SSL Options (used only if the server address starts with 'https://')
+
+# Uncomment if you need to use a different SSL version than the defeault (SSLv3). 
+# Allowed values are SSLv3, SSLv23, SSLv2
+
+# ssl_version: 'SSLv23'
+
+# Uncomment if you need to skip client verification of the server's certificate.
+# Not recommended in production use
+
+#verify_certificate: false

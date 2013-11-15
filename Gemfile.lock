@@ -115,7 +115,7 @@ PLATFORMS
 DEPENDENCIES
   coffee-rails (~> 4.0.0)
   jbuilder (~> 1.2)
-  jira4r
+  jira4r (~> 1.2.0)
   jquery-rails
   rails (= 4.0.1)
   sass-rails (~> 4.0.0)
