@@ -32,5 +32,7 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-gem 'soap4r-ruby1.9'
-gem 'jira4r', :path => 'vendor/plugins/jira4r'
+# gem 'soap4r-ruby1.9'
+# gem 'jira4r', :path => 'vendor/plugins/jira4r'
+# gem 'jira4r-jh-ruby1.9'
+gem 'jira4r'
