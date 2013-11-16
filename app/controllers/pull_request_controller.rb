@@ -5,6 +5,17 @@ class PullRequestController < ApplicationController
   
   respond_to :json
 
+  @@open_comment_template =
+  "(i) [%{user_id}|%{user_url}] referenced this issue in project [%{repo_name}|%{repo_url}]:\n\n"\
+  "*[Pull Request %{pr_number}|%{pr_url}]* _\"%{pr_title}\"_"
+  
+  @@close_comment_template = 
+    "(/) [%{user_id}|%{user_url}] resolved this issue with *[Pull Request %{pr_number}|%{pr_url}]*"
+    
+  @@find_issue_regexp_template = 
+    "(fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
+      
+
   def initialize
         
     @jira_config = YAML.load(File.new "config/config.yml", 'r')
@@ -20,16 +31,20 @@ class PullRequestController < ApplicationController
     end
     
     @jira_connection.login(@jira_config['username'], @jira_config['password'])
-    
   end
   
   def handle
         
     rc = Jira4R::V2::RemoteComment.new
     payload = ActiveSupport::JSON.decode params[:payload]
-    rc.body = create_comment_from payload
+    
+    if payload["action"] == "opened"
+      rc.body = opened_comment_from payload
+    else # "closed"
+      rc.body = closed_comment_from payload
+    end
         
-    r = Regexp.new("(fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(#{@jira_projects.join('|')})-([0-9]+)",
+    r =  Regexp.new(@@find_issue_regexp_template % {projects: @jira_projects.join('|')},
       Regexp::IGNORECASE)
           
     payload["pull_request"]["body"].scan(r) do |match| 
@@ -70,20 +85,29 @@ class PullRequestController < ApplicationController
     render :nothing => true, :status => 200  
   end
   
-  def create_comment_from(json_payload)
+  def opened_comment_from(json_payload)
     
-    pull_request = json_payload["pull_request"]
-    user = pull_request["user"]
-    repo = pull_request["head"]["repo"]
-    user_string = "[#{user["login"]}|#{user["html_url"]}]"
-    pr_string = "[Pull Request ##{json_payload["number"]}|#{pull_request["html_url"]}]"
+    pr = json_payload["pull_request"]
+    user = pr["user"]
+    repo = pr["head"]["repo"]
+    
+    return @@open_comment_template % 
+      { user_id: user["login"], user_url: user["html_url"],
+        repo_name: repo["name"], repo_url: repo["html_url"],
+        pr_number: json_payload["number"], pr_url: pr["html_url"],
+        pr_title: pr["title"] }
+  end
+  
+  def closed_comment_from(json_payload)   
 
-    if json_payload["action"] == "opened"
-      return "(i) #{user_string} referenced this issue in project [#{repo["name"]}|#{repo["html_url"]}]:\n\n"\
-        "*#{pr_string}:* _\"#{pull_request["title"]}\"_"
-    else
-      return "#{user_string} resolved this issue with *#{pr_string}* (/)"
-    end
+    pr = json_payload["pull_request"]
+    user = pr["user"]
+    repo = pr["head"]["repo"]
+    
+    return @@close_comment_template % 
+      { user_id: user["login"], user_url: user["html_url"],
+        pr_number: json_payload["number"],
+        pr_url: pr["html_url"], pr_title: pr["title"] }
   end
   
 end
