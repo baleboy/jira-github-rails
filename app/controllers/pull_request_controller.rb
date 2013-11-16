@@ -5,14 +5,14 @@ class PullRequestController < ApplicationController
   
   respond_to :json
 
-  @@open_comment_template =
+  OPENED_COMMENT_TEMPLATE =
   "(i) [%{user_id}|%{user_url}] referenced this issue in project [%{repo_name}|%{repo_url}]:\n\n"\
   "*[Pull Request %{pr_number}|%{pr_url}]* _\"%{pr_title}\"_"
   
-  @@close_comment_template = 
+  CLOSED_COMMENT_TEMPLATE = 
     "(/) [%{user_id}|%{user_url}] resolved this issue with *[Pull Request %{pr_number}|%{pr_url}]*"
     
-  @@find_issue_regexp_template = 
+  FIND_ISSUE_REGEXP_TEMPLATE = 
     "(fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
       
 
@@ -43,18 +43,15 @@ class PullRequestController < ApplicationController
     else # "closed"
       rc.body = closed_comment_from payload
     end
-        
-    r =  Regexp.new(@@find_issue_regexp_template % {projects: @jira_projects.join('|')},
-      Regexp::IGNORECASE)
           
-    payload["pull_request"]["body"].scan(r) do |match| 
+    payload["pull_request"]["body"].scan find_issue_regexp do |match| 
       
       resolve_issue = !match[0].nil? && payload["action"] == "closed"
       issue_id = match[2] + '-' + match[3]
 
       # Comment on this issue
       begin
-        @jira_connection.addComment(issue_id, rc)
+        @jira_connection.addComment issue_id, rc 
       rescue
         Rails.logger.error "Failed to add comment to issue #{issue_id}"
       else
@@ -69,7 +66,7 @@ class PullRequestController < ApplicationController
             resolve_action = available_actions.find {|s| s.name == 'Resolve Issue'}
           end
           if !resolve_action.nil?
-            @jira_connection.progressWorkflowAction(issue_id, resolve_action.id.to_s, [])
+            @jira_connection.progressWorkflowAction issue_id, resolve_action.id.to_s, []
           else
             Rails.logger.debug "Not allowed to resolve issue #{issue_id}. Allowable actions: "\
               "#{(available_actions.map {|s| s.name}).to_s}"
@@ -91,7 +88,7 @@ class PullRequestController < ApplicationController
     user = pr["user"]
     repo = pr["head"]["repo"]
     
-    return @@open_comment_template % 
+    OPENED_COMMENT_TEMPLATE % 
       { user_id: user["login"], user_url: user["html_url"],
         repo_name: repo["name"], repo_url: repo["html_url"],
         pr_number: json_payload["number"], pr_url: pr["html_url"],
@@ -104,10 +101,16 @@ class PullRequestController < ApplicationController
     user = pr["user"]
     repo = pr["head"]["repo"]
     
-    return @@close_comment_template % 
+    CLOSED_COMMENT_TEMPLATE % 
       { user_id: user["login"], user_url: user["html_url"],
         pr_number: json_payload["number"],
         pr_url: pr["html_url"], pr_title: pr["title"] }
   end
+  
+  def find_issue_regexp
+    Regexp.new(FIND_ISSUE_REGEXP_TEMPLATE % {projects: @jira_projects.join('|')},
+      Regexp::IGNORECASE)
+  end
+  
   
 end
