@@ -33,3 +33,5 @@ group :doc do
 end
 
 gem "jira4r", "~> 1.2.0"
+
+gem "thin"
