@@ -3,10 +3,9 @@ require 'modules'
 class PullRequestController < ApplicationController
 
   include Modules
-  
   respond_to :json
 
-  def handle
+  def post
 
     payload = ActiveSupport::JSON.decode params[:payload]
     
@@ -15,15 +14,18 @@ class PullRequestController < ApplicationController
     else # "closed"
       comment = closed_comment_from payload
     end
+    
+    jira = JiraHelper.instance
+    regexp = jira.find_issue_regexp
           
-    payload["pull_request"]["body"].scan JiraHelper.instance.find_issue_regexp do |match| 
+    payload["pull_request"]["body"].scan regexp do |match| 
 
       issue_id = regexp_issue_id match
       
-      JiraHelper.instance.add_comment issue_id, comment
+      jira.add_comment issue_id, comment
       
       if (regexp_resolve_issue match) && payload["action"] == "closed"
-        JiraHelper.instance.resolve issue_id
+        jira.resolve issue_id
       end
     end
     
