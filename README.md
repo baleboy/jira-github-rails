@@ -16,10 +16,30 @@ In a commit comment or pull request body, any reference to the issue ID (KEY-xxx
 
 ## Installation
 
-To install, clone this github repository and run "bundle install" in the top-level directory. Run in a web server of your choice. 
+To install, clone this github repository and run "bundle install" in the top-level directory.
 
 ## Configuration
 
-To configure, copy the file config-template.yaml and save it as config.yaml. The template file contains detailed information about each configuration option.
+To configure, copy the file config-TEMPLATE.yml to config.yml and edit it with your Jira connection details.
+
+Web hooks for pull requests can only be configured via the Github API.
+
+You can use the github-pull-request plugin on DEV@cloud/jenkins to set this up for you - but some people prefer not to hand over the "keys to the kinddom".
+POST to https://api.github.com/repos/:username/:repo/hooks the following type of data:
+{
+  "name": "web",
+  "active": true,
+  "events": ["pull_request"],
+  "config": {
+    "url": "https://playground.ci.cloudbees.com/github-pull-request-hook/"
+  }
+}
+eg:
+
+curl -u username:password -X POST -d @pullhooks https://api.github.com/repos/:user/:repo/hooks 
+where the JSON above is stored in a file called "pullhooks"
+
+GET to https://api.github.com/repos/:username/:repo/hooks to check if the webhook you created has the proper event applied.
+You will see the URL in the admin section of your repo, and you can change it. There will be no mention of what events the URL fires on, but it should stick to pull_request.
 
 by [Francesco Balestrieri](bale@balenet.com).
