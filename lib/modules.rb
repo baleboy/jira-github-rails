@@ -14,6 +14,7 @@ module Modules
        "(BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
 
     def initialize
+
       @jira_config = YAML.load(File.new "config/config.yml", 'r')
       @jira_projects = @jira_config['projects']
       @resolve_on_merge = @jira_config['resolve_on_merge']
@@ -28,8 +29,10 @@ module Modules
       end
 
       @jira_connection.login(@jira_config['username'], @jira_config['password'])
+
       @regexp = Regexp.new(FIND_ISSUE_REGEXP_TEMPLATE % {projects: @jira_projects.join('|')},
         Regexp::IGNORECASE)
+
     end
 
     def add_comment(issue_id, body)
