@@ -7,13 +7,16 @@ module Modules
   class JiraHelper
 
     include Singleton
-    
+
+    attr_reader :resolve_on_merge    
+
     FIND_ISSUE_REGEXP_TEMPLATE = 
        "(BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
 
     def initialize
       @jira_config = YAML.load(File.new "config/config.yml", 'r')
       @jira_projects = @jira_config['projects']
+      @resolve_on_merge = @jira_config['resolve_on_merge']
       @jira_connection = Jira4R::JiraTool.new(2, @jira_config['address'])
 
       # Optional SSL parameters
@@ -67,7 +70,6 @@ module Modules
         yield !match[0].nil?, match[2] + '-' + match[3]
       end
     end
-    
   end
   
 end
