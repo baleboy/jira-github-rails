@@ -1,4 +1,5 @@
 require 'modules'
+require 'set'
 
 class PullRequestController < ApplicationController
 
@@ -16,13 +17,16 @@ class PullRequestController < ApplicationController
     end
     
     jira = JiraHelper.instance
+    processed_issues = Set.new
     
     jira.scan_issues payload["pull_request"]["body"] do | should_resolve, issue_id |       
-
-      jira.add_comment issue_id, comment
+      #skip already processed issues
+      if processed_issues.add?(issue_id)
+        jira.add_comment issue_id, comment
       
-      if should_resolve && jira.resolve_on_merge && payload["action"] == "closed"
-        jira.resolve issue_id
+        if should_resolve && jira.resolve_on_merge && payload["action"] == "closed"
+          jira.resolve issue_id
+        end
       end
     end
     
