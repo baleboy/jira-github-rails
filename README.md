@@ -14,21 +14,19 @@ To configure, create a copy of the file [config-TEMPLATE.yml](https://github.com
 
 Web hooks for pull request events cannot be configured via the Github web UI, but only via the Github API. One must POST to https://api.github.com/repos/:username/:repo/hooks the following type of data:
 
-{
-  "name": "web",
-  "active": true,
-  "events": ["pull_request"],
-  "config": {
-    "url": "https://example.com/pull_request/"
-  }
-}
+    {
+      "name": "web",
+      "active": true,
+      "events": ["pull_request"],
+      "config": {
+        "url": "https://example.com/pull_request/"
+      }
+    }
 
 eg:
 
-curl -u username:password -X POST -d @pullhooks https://api.github.com/repos/:user/:repo/hooks 
+    curl -u username:password -X POST -d @pullhooks https://api.github.com/repos/:user/:repo/hooks 
 
 where the JSON above is stored in a file called "pullhooks"
 
 After this, the URL will appear in the Services section of the repository settings repo, and can be edited.
-
-by [Francesco Balestrieri](bale@balenet.com).
