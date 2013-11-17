@@ -1,5 +1,8 @@
 GithubJira::Application.routes.draw do
-  post 'pull_request' => 'pull_request#handle'
+
+  post 'pull_request' => 'pull_request#post'
+  post 'push' => 'push#post'
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
