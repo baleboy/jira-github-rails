@@ -9,9 +9,8 @@ module Modules
     include Singleton
 
     attr_reader :resolve_on_merge    
-
-    FIND_ISSUE_REGEXP_TEMPLATE = 
-       "(BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
+    attr_reader :opened_pr_template
+    attr_reader :closed_pr_template    
 
     def initialize
 
@@ -19,6 +18,11 @@ module Modules
       @jira_projects = @jira_config['projects']
       @resolve_on_merge = @jira_config['resolve_on_merge']
       @jira_connection = Jira4R::JiraTool.new(2, @jira_config['address'])
+      @opened_pr_template = @jira_config['comment_template_pr_opened']
+      @closed_pr_template = @jira_config['comment_template_pr_closed']
+
+      @regexp = Regexp.new(@jira_config['find_issue_regexp_template'] %
+       { projects: @jira_projects.join('|') }, Regexp::IGNORECASE)
 
       # Optional SSL parameters
       if @jira_config['ssl_version'] != nil
@@ -28,10 +32,7 @@ module Modules
         @jira_connection.driver.options['protocol.http.ssl_config.verify_mode'] = OpenSSL::SSL::VERIFY_NONE
       end
 
-      @jira_connection.login(@jira_config['username'], @jira_config['password'])
-
-      @regexp = Regexp.new(FIND_ISSUE_REGEXP_TEMPLATE % {projects: @jira_projects.join('|')},
-        Regexp::IGNORECASE)
+      @jira_connection.login @jira_config['username'], @jira_config['password']
 
     end
 

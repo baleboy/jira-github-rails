@@ -20,3 +20,19 @@ resolve_on_merge: true
 # Not recommended in production use
 
 #verify_certificate: false
+
+# Comment templates
+
+comment_template_pr_opened: >
+    (i) [%{user_id}|%{user_url}] referenced this issue in project [%{repo_name}|%{repo_url}]:
+            
+    *[Pull Request %{pr_number}|%{pr_url}]* _"%{pr_title}"_
+    
+comment_template_pr_closed: >
+    (/) [%{user_id}|%{user_url}] resolved this issue with *[Pull Request %{pr_number}|%{pr_url}]*
+
+# Regular expression used to scan for issue ids 
+# 'projects' will be replaced with the actual project names
+
+find_issue_regexp_template: >
+    (BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)
