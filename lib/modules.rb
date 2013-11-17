@@ -9,7 +9,7 @@ module Modules
     include Singleton
     
     FIND_ISSUE_REGEXP_TEMPLATE = 
-       "(fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
+       "(BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)"
 
     def initialize
       @jira_config = YAML.load(File.new "config/config.yml", 'r')
@@ -61,19 +61,13 @@ module Modules
         Rails.logger.debug "Successfully resolved issue #{issue_id}"
       end
     end
-
-    def find_issue_regexp
-      @regexp
+  
+    def scan_issues(body)
+      body.scan @regexp do |match|
+        yield !match[0].nil?, match[2] + '-' + match[3]
+      end
     end
     
   end
   
-  def regexp_resolve_issue(match)
-    !match[0].nil?
-  end
-  
-  def regexp_issue_id(match)
-    match[2] + '-' + match[3]
-  end
-
 end

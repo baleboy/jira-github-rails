@@ -9,22 +9,19 @@ class PullRequestController < ApplicationController
 
     payload = ActiveSupport::JSON.decode params[:payload]
     
-    if payload["action"] == "opened"
+    if payload["action"] == "closed"
+      comment = closed_comment_from payload      
+    else # "opened", "reopened", "synchronize"
       comment = opened_comment_from payload
-    else # "closed"
-      comment = closed_comment_from payload
     end
     
     jira = JiraHelper.instance
-    regexp = jira.find_issue_regexp
-          
-    payload["pull_request"]["body"].scan regexp do |match| 
+    
+    jira.scan_issues payload["pull_request"]["body"] do | should_resolve, issue_id |       
 
-      issue_id = regexp_issue_id match
-      
       jira.add_comment issue_id, comment
       
-      if (regexp_resolve_issue match) && payload["action"] == "closed"
+      if (should_resolve) && payload["action"] == "closed"
         jira.resolve issue_id
       end
     end
