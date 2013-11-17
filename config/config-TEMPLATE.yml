@@ -6,6 +6,9 @@ password: 'password'
 # List of project keys
 projects: ["PROJECT1", "PROJECT2"]
 
+# automatically resolve issues when fixes are merged
+resolve_on_merge: true
+
 ### SSL Options (used only if the server address starts with 'https://')
 
 # Uncomment if you need to use a different SSL version than the defeault (SSLv3). 

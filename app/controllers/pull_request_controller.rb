@@ -21,7 +21,7 @@ class PullRequestController < ApplicationController
 
       jira.add_comment issue_id, comment
       
-      if (should_resolve) && payload["action"] == "closed"
+      if should_resolve && jira.resolve_on_merge && payload["action"] == "closed"
         jira.resolve issue_id
       end
     end
