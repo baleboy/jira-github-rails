@@ -35,4 +35,4 @@ comment_template_pr_closed: >
 # 'projects' will be replaced with the actual project names
 
 find_issue_regexp_template: >
-    (BUG=|fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)
+    (fixe?[s|d] *|resolve[s|d]? *|close[s|d]? *)?(http[^ ]+/)?(%{projects})-([0-9]+)

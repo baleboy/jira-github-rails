@@ -2,7 +2,7 @@
 
 Rails application that receives Github web hooks notifications for pull requests, and comments and resolves any referenced issues in Jira. It mimics the syntax used when working with the Github issue tracker.
 
-Any reference to the issue ID (KEY-xxx) or full issue URL in the body of the pull request will cause the same comment to be posted to the corresponding issue in Jira. If the comment indicates that the PR is fixing the issue, the issue will be resolved. An issue will be resolved automatically if the issue ID or URL is preceded by any of the (case insensitive) words _fix, fixes, fixed, resolve, resolves, resolved, close, closes, closed_ and _BUG=_ (the latter seems to be the convention used in the Crosswalk project) 
+Any reference to the issue ID (KEY-xxx) or full issue URL in the body of the pull request will cause the same comment to be posted to the corresponding issue in Jira. If the comment indicates that the PR is fixing the issue, the issue will be resolved. An issue will be resolved automatically if the issue ID or URL is preceded by any of the (case insensitive) words _fix, fixes, fixed, resolve, resolves, resolved, close, closes and closed._  
 
 ## Installation
 
